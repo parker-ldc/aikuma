@@ -10,6 +10,10 @@
 		android:showAsAction="always"/>
 	<item android:id="@+id/start_http_server"
 	    android:title="@string/connect"/>
+	<item android:id="@+id/video_record"
+		android:icon="@drawable/video_camera_32"
+		android:title="@string/video_record"
+		android:showAsAction="always" />
 	<item android:id="@+id/settings"
 		android:icon="@drawable/settings_32"
 		android:title="@string/settings"/>

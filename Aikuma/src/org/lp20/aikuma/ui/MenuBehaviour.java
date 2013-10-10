@@ -72,6 +72,12 @@ public class MenuBehaviour {
 			case R.id.speakers:
 				intent = new Intent(activity, MainSpeakersActivity.class);
 				activity.startActivity(intent);
+			case R.id.video_record:
+				intent = new Intent(activity, VideoRecordActivity.class);
+				activity.startActivity(intent);
+				return true;
+			case R.id.mainlist:
+				goToMainActivity();
 				return true;
 			case R.id.help:
 				openHelpInBrowser();
@@ -95,7 +101,7 @@ public class MenuBehaviour {
 
 	/**
 	 * Defines what happens when an menu item is selected and safe transitions
-	 * are off.
+	 * are on.
 	 *
 	 * @param	item	The menu item selected.
 	 * @param	safeActivityTransitionMessage	The message to display warning
@@ -111,6 +117,13 @@ public class MenuBehaviour {
 				return true;
 			case R.id.record:
 				intent = new Intent(activity, RecordActivity.class);
+				activity.startActivity(intent);
+				return true;
+			case R.id.speakers:
+				intent = new Intent(activity, MainSpeakersActivity.class);
+				activity.startActivity(intent);
+			case R.id.video_record:
+				intent = new Intent(activity, VideoRecordActivity.class);
 				activity.startActivity(intent);
 				return true;
 			case R.id.help:
