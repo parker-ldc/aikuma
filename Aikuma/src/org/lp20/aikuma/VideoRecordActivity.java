@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
+import android.widget.VideoView;
 import java.io.File;
 import java.util.UUID;
 import org.lp20.aikuma.R;
@@ -22,11 +24,26 @@ public class VideoRecordActivity extends AikumaActivity {
 
 	public void onVideoRecordButton(View view) {
 		Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-			File videoFile = VideoUtils.getVideoFile(uuid);
-			intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(videoFile));
+		videoFile = VideoUtils.getVideoFile(uuid);
+		intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(videoFile));
 		startActivityForResult(intent, ACTION_TAKE_VIDEO);
+	}
+
+	protected void onActivityResult(
+			int requestCode, int resultCode, Intent intent) {
+		Log.i("video", "YO DONE1");
+		if (requestCode == ACTION_TAKE_VIDEO) {
+			Log.i("video", "YO DONE2");
+			if (resultCode == RESULT_OK) {
+				VideoView videoView = (VideoView) findViewById(R.id.videoView);
+				videoView.setVideoPath(videoFile.getPath());
+				videoView.start();
+				Log.i("video", "YO DONE");
+			}
+		}
 	}
 
 	public static final int ACTION_TAKE_VIDEO = 1;
 	private UUID uuid;
+	private File videoFile;
 }
