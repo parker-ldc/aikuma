@@ -31,14 +31,11 @@ public class VideoRecordActivity extends AikumaActivity {
 
 	protected void onActivityResult(
 			int requestCode, int resultCode, Intent intent) {
-		Log.i("video", "YO DONE1");
 		if (requestCode == ACTION_TAKE_VIDEO) {
-			Log.i("video", "YO DONE2");
 			if (resultCode == RESULT_OK) {
 				VideoView videoView = (VideoView) findViewById(R.id.videoView);
 				videoView.setVideoPath(videoFile.getPath());
 				videoView.start();
-				Log.i("video", "YO DONE");
 			}
 		}
 	}
