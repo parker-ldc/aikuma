@@ -51,9 +51,9 @@ public class VideoRecordActivity extends AikumaActivity {
 			int requestCode, int resultCode, Intent _intent) {
 		if (requestCode == ACTION_TAKE_VIDEO) {
 			if (resultCode == RESULT_OK) {
-				VideoView videoView = (VideoView) findViewById(R.id.videoView);
-				videoView.setVideoPath(videoFile.getPath());
-				videoView.start();
+				//VideoView videoView = (VideoView) findViewById(R.id.videoView);
+				//videoView.setVideoPath(videoFile.getPath());
+				//videoView.start();
 			}
 		}
 	}
