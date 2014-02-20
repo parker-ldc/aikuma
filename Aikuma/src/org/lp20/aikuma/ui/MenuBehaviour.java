@@ -76,9 +76,6 @@ public class MenuBehaviour {
 				intent = new Intent(activity, VideoRecordActivity.class);
 				activity.startActivity(intent);
 				return true;
-			case R.id.mainlist:
-				goToMainActivity();
-				return true;
 			case R.id.help:
 				openHelpInBrowser();
 				return true;
