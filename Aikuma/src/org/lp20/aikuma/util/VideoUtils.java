@@ -11,6 +11,12 @@ import java.util.UUID;
 public final class VideoUtils {
 	private VideoUtils() {}
 
+	private static File getNoSyncVideosPath() {
+		File path = new File(FileIO.getNoSyncPath(), "videos");
+		path.mkdirs();
+		return path;
+	}
+
 	private static File getVideosPath() {
 		File path = new File(FileIO.getAppRootPath(), "videos");
 		path.mkdirs();
@@ -25,5 +31,16 @@ public final class VideoUtils {
 	 */
 	public static File getVideoFile(UUID uuid) {
 		return new File(getVideosPath(), uuid.toString() + ".mp4");
+	}
+
+	/**
+	 * Returns a video corresponding to the given UUID from the no-sync
+	 * directory.
+	 *
+	 * @param	uuid	The UUID of the video.
+	 * @return	A File representing the video file.
+	 */
+	public static File getNoSyncVideoFile(UUID uuid) {
+		return new File(getNoSyncVideosPath(), uuid.toString() + ".mp4");
 	}
 }

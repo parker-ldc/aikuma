@@ -34,7 +34,7 @@ public class VideoRecordActivity extends AikumaActivity {
 	 */
 	public void onVideoRecordButton(View view) {
 		Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-		videoFile = VideoUtils.getVideoFile(uuid);
+		videoFile = VideoUtils.getNoSyncVideoFile(uuid);
 		intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(videoFile));
 		startActivityForResult(intent, ACTION_TAKE_VIDEO);
 	}
@@ -51,6 +51,10 @@ public class VideoRecordActivity extends AikumaActivity {
 			int requestCode, int resultCode, Intent _intent) {
 		if (requestCode == ACTION_TAKE_VIDEO) {
 			if (resultCode == RESULT_OK) {
+				Intent intent = new Intent(this, VideoReview.class);
+				intent.putExtra("uuidString", uuid.toString());
+				startActivity(intent);
+				VideoRecordActivity.this.finish();
 				//VideoView videoView = (VideoView) findViewById(R.id.videoView);
 				//videoView.setVideoPath(videoFile.getPath());
 				//videoView.start();
