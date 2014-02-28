@@ -51,7 +51,10 @@ public class VideoRecordActivity extends AikumaActivity {
 			int requestCode, int resultCode, Intent _intent) {
 		if (requestCode == ACTION_TAKE_VIDEO) {
 			if (resultCode == RESULT_OK) {
+				Uri videoUri = _intent.getData();
+				Log.i("video", "videoUri: " + videoUri);
 				Intent intent = new Intent(this, VideoReview.class);
+
 				intent.putExtra("uuidString", uuid.toString());
 				startActivity(intent);
 				VideoRecordActivity.this.finish();
