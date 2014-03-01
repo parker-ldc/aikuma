@@ -9,6 +9,12 @@ import java.util.UUID;
 import org.lp20.aikuma.R;
 import org.lp20.aikuma.util.VideoUtils;
 
+import java.util.UUID;
+import android.provider.MediaStore;
+import org.lp20.aikuma.util.VideoUtils;
+import android.content.Intent;
+import android.net.Uri;
+
 /**
  * An activity that allows the user to watch a video before binding metadata to
  * it and sharing it, allowing the option of discarding it.
@@ -17,21 +23,49 @@ import org.lp20.aikuma.util.VideoUtils;
  */
 public class VideoReviewActivity extends AikumaActivity {
 
+	static final int ACTION_TAKE_VIDEO = 1;
+
 	private UUID uuid;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		setContentView(R.layout.video_review);
 		// Flag to let the AikumaActivity superclass know that the user should
 		// be warned that data will be discarded if they transition to another
 		// activity.
 		safeActivityTransition = true;
 
-		Intent intent = getIntent();
-		uuid = UUID.fromString(
-				(String) intent.getExtras().get("uuidString"));
-		setUpVideo(uuid);
+		requestVideo();
+	}
+
+	/**
+	 * Request a video to be taken
+	 */
+	public void requestVideo() {
+		uuid = UUID.randomUUID();
+		Intent videoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+		File videoFile = VideoUtils.getNoSyncVideoFile(uuid);
+		videoIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(videoFile));
+		startActivityForResult(videoIntent, ACTION_TAKE_VIDEO);
+	}
+
+	/**
+	 * Called when the video recording is complete
+	 *
+	 * @param	requestCode	The code indicating the type of request (should
+	 * only be video)
+	 * @param	resultCode	Code indicating success or not
+	 * @param	_intent	The intent sent back to this activity.
+	 */
+	protected void onActivityResult(
+			int requestCode, int resultCode, Intent _intent) {
+		if (requestCode == ACTION_TAKE_VIDEO) {
+			if (resultCode == RESULT_OK) {
+				setUpVideo(uuid);
+			}
+		}
 	}
 
 	/**

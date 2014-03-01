@@ -18,6 +18,11 @@ import org.lp20.aikuma.MainActivity;
 import org.lp20.aikuma.http.Server;
 import org.lp20.aikuma.R;
 
+import java.util.UUID;
+import android.provider.MediaStore;
+import org.lp20.aikuma.util.VideoUtils;
+import android.content.Intent;
+
 /**
  * Class that unifies some inter-activity navigation code.
  *
@@ -73,7 +78,7 @@ public class MenuBehaviour {
 				intent = new Intent(activity, MainSpeakersActivity.class);
 				activity.startActivity(intent);
 			case R.id.video_record:
-				intent = new Intent(activity, VideoRecordActivity.class);
+				intent = new Intent(activity, VideoReviewActivity.class);
 				activity.startActivity(intent);
 				return true;
 			case R.id.help:
@@ -120,7 +125,7 @@ public class MenuBehaviour {
 				intent = new Intent(activity, MainSpeakersActivity.class);
 				activity.startActivity(intent);
 			case R.id.video_record:
-				intent = new Intent(activity, VideoRecordActivity.class);
+				intent = new Intent(activity, VideoReviewActivity.class);
 				activity.startActivity(intent);
 				return true;
 			case R.id.help:
@@ -211,6 +216,22 @@ public class MenuBehaviour {
 				.setNegativeButton("Cancel", null)
 				.show();
 	}
+
+	/**
+	 * Requests a video to be recorded and forwards the information to the
+	 * VideoReview activity.
+	 */
+	 /*
+	public void recordVideo() {
+		int ACTION_TAKE_VIDEO = 1;
+		UUID uuid = UUID.randomUUID();
+		Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE,
+		VideoReviewActivity.class);
+		videoFile = VideoUtils.getNoSyncVideoFile(uuid);
+		intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(videoFile));
+		startActivityForResult(intent, ACTION_TAKE_VIDEO);
+	}
+	*/
 
 	private Activity activity;
 	private String DEFAULT_MESSAGE = "This will discard the new data. Are you sure?";
