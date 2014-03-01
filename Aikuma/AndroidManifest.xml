@@ -108,6 +108,11 @@
 				android:label="@string/app_name"
 				android:parentActivityName="org.lp20.aikuma.ui.VideoRecordActivity">
 		</activity>
+		<activity android:name="org.lp20.aikuma.ui.VideoMetadataActivity"
+				android:configChanges="orientation"
+				android:label="@string/app_name"
+				android:parentActivityName="org.lp20.aikuma.ui.VideoReviewActivity">
+		</activity>
     </application>
 
 </manifest>
