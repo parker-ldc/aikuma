@@ -103,7 +103,7 @@
 				android:label="@string/app_name"
 				android:parentActivityName="org.lp20.aikuma.MainActivity">
 		</activity>
-		<activity android:name="org.lp20.aikuma.ui.VideoReview"
+		<activity android:name="org.lp20.aikuma.ui.VideoReviewActivity"
 				android:configChanges="orientation"
 				android:label="@string/app_name"
 				android:parentActivityName="org.lp20.aikuma.ui.VideoRecordActivity">

@@ -42,7 +42,8 @@ import org.lp20.aikuma.model.Language;
 import org.apache.commons.io.FileUtils;
 
 /**
- * The activity that allows audio to be recorded.
+ * The activity that allows metadata about a recording to be bound to the
+ * recording.
  *
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>

@@ -2,6 +2,7 @@ package org.lp20.aikuma.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.VideoView;
 import java.io.File;
 import java.util.UUID;
@@ -14,8 +15,10 @@ import org.lp20.aikuma.util.VideoUtils;
  *
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  */
-public class VideoReview extends AikumaActivity {
-	
+public class VideoReviewActivity extends AikumaActivity {
+
+	private UUID uuid;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -26,7 +29,7 @@ public class VideoReview extends AikumaActivity {
 		safeActivityTransition = true;
 
 		Intent intent = getIntent();
-		UUID uuid = UUID.fromString(
+		uuid = UUID.fromString(
 				(String) intent.getExtras().get("uuidString"));
 		setUpVideo(uuid);
 	}
@@ -42,5 +45,26 @@ public class VideoReview extends AikumaActivity {
 		VideoView videoView = (VideoView) findViewById(R.id.videoView);
 		videoView.setVideoPath(videoFile.getPath());
 		videoView.start();
+	}
+
+	/**
+	 * When the user presses the ok button.
+	 *
+	 * @param	button	The Ok button.
+	 */
+	public void onOkButtonPressed(View button) {
+		Intent intent = new Intent(this, VideoMetadataActivity.class);
+		intent.putExtra("uuidString", uuid.toString());
+		startActivity(intent);
+		VideoReviewActivity.this.finish();
+	}
+
+	/**
+	 * When the user presses the cancel button.
+	 *
+	 * @param	button	The cancel button.
+	 */
+	public void onCancelButtonPressed(View button) {
+		onBackPressed();
 	}
 }
