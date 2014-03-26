@@ -18,4 +18,11 @@
 		android:scaleType="centerInside"
 		android:src="@drawable/arrow_circle_o_down"
 	/>
+	<Button
+		android:id="@+id/SoundPoolActivity"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:onClick="goToSoundPoolActivity"
+		android:text="SoundPoolActivity"
+	/>
 </LinearLayout>

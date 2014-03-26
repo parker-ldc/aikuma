@@ -29,6 +29,7 @@ import org.lp20.aikuma.ui.RecordActivity;
 import org.lp20.aikuma.ui.RecordingArrayAdapter;
 import org.lp20.aikuma.ui.RecordingMetadataActivity;
 import org.lp20.aikuma.ui.SettingsActivity;
+import org.lp20.aikuma.ui.SoundPoolActivity;
 import org.lp20.aikuma.util.SyncUtil;
 
 // For audio imports
@@ -110,7 +111,7 @@ public class MainActivity extends ListActivity {
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id){
 		Recording recording = (Recording) getListAdapter().getItem(position);
-		Intent intent = new Intent(this, ListenActivity.class);
+		Intent intent = new Intent(this, SoundPoolActivity.class);
 		intent.putExtra("id", recording.getId());
 		startActivity(intent);
 	}
@@ -231,6 +232,16 @@ public class MainActivity extends ListActivity {
 			dialog = builder.show();
 			return dialog;
 		}
+	}
+
+	/**
+	 * Called when the SoundPoolActivity button is pressed.
+	 *
+	 * @param	view	The SoundPoolActivity button.
+	 */
+	public void goToSoundPoolActivity(View view) {
+		Intent intent = new Intent(this, SoundPoolActivity.class);
+		startActivity(intent);
 	}
 
 	private String[] mFileList;
