@@ -30,6 +30,7 @@ import org.lp20.aikuma.ui.RecordingArrayAdapter;
 import org.lp20.aikuma.ui.RecordingMetadataActivity;
 import org.lp20.aikuma.ui.SettingsActivity;
 import org.lp20.aikuma.util.SyncUtil;
+import org.lp20.aikuma.util.WavReader;
 
 // For audio imports
 import android.app.AlertDialog;
@@ -199,8 +200,16 @@ public class MainActivity extends ListActivity {
 						// file.
 						try {
 							WaveFile waveFile = new WaveFile(mPath);
-							sampleRate = (long) waveFile.getSampleRate();
+							//sampleRate = (long) waveFile.getSampleRate();
 							durationMsec = (int) (waveFile.getDuration() * 1000);
+							WavReader wavReader = WavReader(mPath);
+							sampleRate = (long) wavReader.getSampleRate();
+							int numSamples = wavReader.getNumSamples();
+
+							double duration;
+							duration = (double) numSamples / sampleRate;
+							int durationMsec = duration * 1000;
+
 						} catch (IOException e) {
 							Toast.makeText(getActivity(),
 									"Failed to read the WAVE file.",

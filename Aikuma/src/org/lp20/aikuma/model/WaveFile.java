@@ -4,6 +4,7 @@
 */
 package org.lp20.aikuma.model;
 
+import android.util.Log;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
@@ -73,6 +74,9 @@ public class WaveFile {
 	 * @return	The duration of the WAVE file in seconds.
 	 */
 	public double getDuration() {
+		Log.i("WaveFile", "mNumChannels: " + mNumChannels);
+		Log.i("WaveFile", "getBitsPerSample(): " + getBitsPerSample());
+		Log.i("WaveFile", "mSampleRate: " + mSampleRate);
 		// Data length is the total number of bytes minus the header.
 		long dataLength = mFile.length() - 44;
 		// Here we assume that bits per sample will always be a multiple of 8.
@@ -98,6 +102,12 @@ public class WaveFile {
 		out.write(buff);
 		out.flush();
 		mHeader = out.toByteArray();
+
+		int count = 0;
+		for (byte b : mHeader) {
+			Log.i("WaveFile", count + ": " + b);
+			count++;
+		}
 	}
 
 	// Reads the sample rate from the wave file
@@ -122,6 +132,7 @@ public class WaveFile {
 		ByteBuffer bb = ByteBuffer.wrap(ncBytes);
 		bb.order(ByteOrder.LITTLE_ENDIAN);
 		mNumChannels = bb.getShort();
+		Log.i("WaveFile", "Reading num of channels: " + mNumChannels);
 	}
 
 	private File mFile;
