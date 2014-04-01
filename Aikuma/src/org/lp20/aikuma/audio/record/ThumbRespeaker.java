@@ -55,8 +55,8 @@ public class ThumbRespeaker {
 	 * Plays the original recording.
 	 */
 	public void playOriginal() {
-		player.seekToSample(mapper.getOriginalStartSample());
-		mapper.markOriginal(player);
+		tempOrigStart = mapper.getOriginalStartSample();
+		player.seekToSample(tempStart);
 		player.play();
 	}
 
@@ -65,12 +65,20 @@ public class ThumbRespeaker {
 	 */
 	public void pauseOriginal() {
 		player.pause();
+		tempOrigEnd = player.getCurrentSample();
 	}
 
 	/**
 	 * Activates recording of the respeaking.
 	 */
 	public void recordRespeaking() {
+		if (tempOrigEnd - tempOrigStart > 16000) {
+			Log.i("mapper", "difference significant");
+			mapper.markOriginal(temOrigStart);
+
+		} else {
+			Log.i("mapper", "difference insignificant");
+		}
 		mapper.markRespeaking(player, recorder);
 		recorder.listen();
 	}
@@ -150,4 +158,11 @@ public class ThumbRespeaker {
 
 	/** Indicates whether the recording has finished playing. */
 	private boolean finishedPlaying;
+
+	/**
+	 * Temporary markers for the original in order to determine if a played
+	 * segment is longer than 0.25 seconds.
+	 */
+	long tempOrigStart;
+	long tempOrigEnd;
 }
