@@ -167,7 +167,13 @@ public class Client {
 	 */
 	public boolean sync() {
 		boolean pushResult = push();
+		if (!pushResult) {
+			Log.i("sync", "push failed");
+		}
 		boolean pullResult = pull();
+		if (!pullResult) {
+			Log.i("sync", "pull failed");
+		}
 		return pushResult && pullResult;
 	}
 
@@ -204,6 +210,7 @@ public class Client {
 			clientDir = new File(clientBaseDir + "/" + directoryPath);
 		}
 		if (!clientDir.isDirectory()) {
+			Log.i("sync", "clientDir isn't a directory.");
 			return false;
 		}
 
@@ -215,6 +222,7 @@ public class Client {
 			apacheClient.changeWorkingDirectory(
 					serverBaseDir + "/" + directoryPath);
 		} catch (IOException e) {
+			Log.i("sync", "Making and changing dir failed.");
 			return false;
 		}
 
@@ -229,8 +237,14 @@ public class Client {
 				if (!file.getName().endsWith(".inprogress")) {
 					if (!file.isDirectory()) {
 						if (!serverFilenames.contains(filename)) {
+							for (String name : serverFilenames) {
+								Log.i("sync", "a filename: " + name);
+							}
 							result = pushFile(directoryPath, file);
 							if (!result) {
+								Log.i("sync", "Pushing file failed. path: " +
+										directoryPath + ", file: " + file +
+										", filename:" + filename);
 								return false;
 							}
 						}
@@ -240,13 +254,15 @@ public class Client {
 						apacheClient.changeWorkingDirectory(
 								serverBaseDir + "/" + directoryPath);
 						if (!result) {
+							Log.i("sync", "Pushing dir failed: " +
+									directoryPath + " / " + filename);
 							return false;
 						}
 					}
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			Log.e("sync", "IOException pushing", e);
 			return false;
 		}
 
@@ -268,12 +284,18 @@ public class Client {
 					serverBaseDir + "/" + directoryPath + "/" + file.getName() +
 							".inprogress",
 					stream);
+			if (!result) {
+				Log.i("sync", "file sync failed. serverBaseDir: " +
+						serverBaseDir + ", directoryPath: " + directoryPath +
+						"file.getName(): " + file.getName());
+			}
 			stream.close();
 			apacheClient.rename(
 					serverBaseDir + "/" + directoryPath + "/" + file.getName() +
 							".inprogress",
 					serverBaseDir + "/" + directoryPath + "/" + file.getName());
 		} catch (IOException e) {
+			Log.e("sync", "IOException when pushing file", e);
 			return false;
 		}
 		if (result) {
