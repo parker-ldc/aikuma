@@ -37,7 +37,7 @@ public class MainSpeakersActivity extends AikumaListActivity {
 
 		speakers = Speaker.readAll();
 		ArrayAdapter<Speaker> adapter =
-				new SpeakerArrayAdapter(this, speakers);
+				new MainSpeakerArrayAdapter(this, speakers);
 		setListAdapter(adapter);
 	}
 

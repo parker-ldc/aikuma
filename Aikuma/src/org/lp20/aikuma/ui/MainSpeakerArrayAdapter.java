@@ -25,7 +25,7 @@ import org.lp20.aikuma.R;
  * @author	Oliver Adams	<oliver.adams@gmail.com>
  * @author	Florian Hanke	<florian.hanke@gmail.com>
  */
-public class SpeakerArrayAdapter extends ArrayAdapter<Speaker> {
+public class MainSpeakerArrayAdapter extends ArrayAdapter<Speaker> {
 
 	/**
 	 * Constructor.
@@ -34,7 +34,7 @@ public class SpeakerArrayAdapter extends ArrayAdapter<Speaker> {
 	 * @param	speakers	The list of speakers that the array adapter is to
 	 * deal with.
 	 */
-	public SpeakerArrayAdapter(Context context, List<Speaker> speakers) {
+	public MainSpeakerArrayAdapter(Context context, List<Speaker> speakers) {
 		super(context, LIST_ITEM_LAYOUT, speakers);
 		inflater = (LayoutInflater)
 				context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -69,7 +69,7 @@ public class SpeakerArrayAdapter extends ArrayAdapter<Speaker> {
 		return speakerView;
 	}
 
-	private static final int LIST_ITEM_LAYOUT = R.layout.speaker_checkbox_list_item;
+	private static final int LIST_ITEM_LAYOUT = R.layout.speaker_list_item;
 	private LayoutInflater inflater;
 
 }
