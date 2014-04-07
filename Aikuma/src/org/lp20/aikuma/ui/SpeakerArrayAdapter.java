@@ -7,8 +7,10 @@ package org.lp20.aikuma.ui;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.ImageView;
 import android.util.Log;
@@ -33,9 +35,16 @@ public class SpeakerArrayAdapter extends ArrayAdapter<Speaker> {
 	 * @param	context	The context that the array adapter will be used in.
 	 * @param	speakers	The list of speakers that the array adapter is to
 	 * deal with.
+	 * @param	prevSelectedSpeakers	The list of speakers currently selected
+	 * to be part of the recording
 	 */
-	public SpeakerArrayAdapter(Context context, List<Speaker> speakers) {
+	public SpeakerArrayAdapter(Context context, List<Speaker> speakers,
+			List<Speaker> prevSelectedSpeakers) {
 		super(context, LIST_ITEM_LAYOUT, speakers);
+		this.speakers = speakers;
+		this.prevSelectedSpeakers = prevSelectedSpeakers;
+		this.newSelectedSpeakers =
+				new ArrayList<Speaker>(this.prevSelectedSpeakers);
 		inflater = (LayoutInflater)
 				context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
@@ -44,7 +53,7 @@ public class SpeakerArrayAdapter extends ArrayAdapter<Speaker> {
 	public View getView(int position, View _, ViewGroup parent) {
 		View speakerView =
 				(View) inflater.inflate(LIST_ITEM_LAYOUT, parent, false);
-		Speaker speaker = getItem(position);
+		final Speaker speaker = getItem(position);
 		TextView speakerNameView =
 				(TextView) speakerView.findViewById(R.id.speakerName);
 		speakerNameView.setText(speaker.getName());
@@ -66,10 +75,38 @@ public class SpeakerArrayAdapter extends ArrayAdapter<Speaker> {
 		} catch (IOException e) {
 			// If the image can't be loaded, we just leave it at that.
 		}
+
+		// Deal with checkbox related stuff
+		CheckBox speakerCheckBox = (CheckBox)
+				speakerView.findViewById(R.id.speakerCheckBox);
+		if (newSelectedSpeakers.contains(speaker)) {
+			speakerCheckBox.setChecked(true);
+		}
+
+		speakerCheckBox.setOnClickListener(new OnClickListener() {
+			public void onClick(View view) {
+				boolean checked = ((CheckBox) view).isChecked();
+				if (checked) {
+					newSelectedSpeakers.add(speaker);
+					checked = true;
+				} else {
+					newSelectedSpeakers.remove(speaker);
+					checked = false;
+				}
+			}
+		});
+
 		return speakerView;
+	}
+
+	public List<Speaker> getNewSelectedSpeakers() {
+		return newSelectedSpeakers;
 	}
 
 	private static final int LIST_ITEM_LAYOUT = R.layout.speaker_checkbox_list_item;
 	private LayoutInflater inflater;
+	private List<Speaker> speakers;
+	private List<Speaker> prevSelectedSpeakers;
+	private List<Speaker> newSelectedSpeakers;
 
 }
