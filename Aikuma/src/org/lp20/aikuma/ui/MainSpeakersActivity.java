@@ -25,7 +25,7 @@ public class MainSpeakersActivity extends AikumaListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.speakers);
+		setContentView(R.layout.main_speakers);
 		//Lets method in superclass know to ask user if they are willing to
 		//discard new data on an activity transition via the menu.
 		safeActivityTransition = false;
