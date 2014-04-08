@@ -198,28 +198,30 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 			int requestCode, int resultCode, Intent intent) {
 		if (requestCode == ADD_SPEAKER) {
 			if (resultCode == RESULT_OK) {
-				Speaker speaker = intent.getParcelableExtra("speaker");
-				if (!speakersIds.contains(speaker.getId())) {
-					speakersIds.add(speaker.getId());
-					for (Language language : speaker.getLanguages()) {
-						if (!languages.contains(language)) {
-							languages.add(language);
+				ArrayList<Speaker> speakers = intent.getParcelableArrayListExtra("speakers");
+				for (Speaker speaker: speakers) {
+					if (!speakersIds.contains(speaker.getId())) {
+						speakersIds.add(speaker.getId());
+						for (Language language : speaker.getLanguages()) {
+							if (!languages.contains(language)) {
+								languages.add(language);
+							}
 						}
+						selectedLanguages = new ArrayList<Language>();
+						ImageView speakerImage = new ImageView(this);
+						speakerImage.setAdjustViewBounds(true);
+						speakerImage.setMaxHeight(60);
+						speakerImage.setMaxWidth(60);
+						speakerImage.setPaddingRelative(5,5,5,5);
+						try {
+							speakerImage.setImageBitmap(speaker.getSmallImage());
+						} catch (IOException e) {
+							// If the image can't be loaded, we just leave it at that.
+						}
+						userImages.addView(speakerImage);
+						recordingHasSpeaker = true;
+						updateOkButton();
 					}
-					selectedLanguages = new ArrayList<Language>();
-					ImageView speakerImage = new ImageView(this);
-					speakerImage.setAdjustViewBounds(true);
-					speakerImage.setMaxHeight(60);
-					speakerImage.setMaxWidth(60);
-					speakerImage.setPaddingRelative(5,5,5,5);
-					try {
-						speakerImage.setImageBitmap(speaker.getSmallImage());
-					} catch (IOException e) {
-						// If the image can't be loaded, we just leave it at that.
-					}
-					userImages.addView(speakerImage);
-					recordingHasSpeaker = true;
-					updateOkButton();
 				}
 			}
 		}

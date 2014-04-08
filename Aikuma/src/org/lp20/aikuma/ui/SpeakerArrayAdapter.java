@@ -99,7 +99,7 @@ public class SpeakerArrayAdapter extends ArrayAdapter<Speaker> {
 		return speakerView;
 	}
 
-	public List<Speaker> getNewSelectedSpeakers() {
+	public ArrayList<Speaker> getNewSelectedSpeakers() {
 		return newSelectedSpeakers;
 	}
 
@@ -107,6 +107,6 @@ public class SpeakerArrayAdapter extends ArrayAdapter<Speaker> {
 	private LayoutInflater inflater;
 	private List<Speaker> speakers;
 	private List<Speaker> prevSelectedSpeakers;
-	private List<Speaker> newSelectedSpeakers;
+	private ArrayList<Speaker> newSelectedSpeakers;
 
 }

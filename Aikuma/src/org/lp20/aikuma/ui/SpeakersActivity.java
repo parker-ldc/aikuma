@@ -53,14 +53,6 @@ public class SpeakersActivity extends AikumaListActivity {
 		startActivity(intent);
 	}
 
-	@Override
-	protected void onListItemClick(ListView l, View v, int position, long id) {
-		Intent intent = new Intent();
-		intent.putExtra("speaker", (Speaker)l.getItemAtPosition(position));
-		setResult(RESULT_OK, intent);
-		this.finish();
-	}
-
 	/**
 	 * Returns to the RecordingMetadataActivity, so there is no need to prompt
 	 * the user that they may be discarding data.
@@ -79,6 +71,12 @@ public class SpeakersActivity extends AikumaListActivity {
 		// Set the selected speakers to reflect what was checked in the list of
 		// checkboxes.
 		selectedSpeakers = adapter.getNewSelectedSpeakers();
+
+		// Make an intent containing the list of speakers and send it back to
+		// the recording metadata activity.
+		Intent intent = new Intent();
+		intent.putParcelableArrayListExtra("speakers", selectedSpeakers);
+		setResult(RESULT_OK, intent);
 		this.finish();
 	}
 
@@ -92,6 +90,6 @@ public class SpeakersActivity extends AikumaListActivity {
 	}
 
 	private List<Speaker> speakers;
-	private List<Speaker> selectedSpeakers;
+	private ArrayList<Speaker> selectedSpeakers;
 	private SpeakerArrayAdapter adapter;
 }
