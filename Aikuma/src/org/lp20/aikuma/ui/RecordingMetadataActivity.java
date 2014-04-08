@@ -80,6 +80,9 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 
 		nameField = (EditText) findViewById(R.id.recordingDescription);
 		nameField.addTextChangedListener(emptyTextWatcher);
+
+		// Initialize selectedSpeakers to be empty
+		selectedSpeakers = new ArrayList<Speaker>();
 	}
 
 	// Prepares the player with the recording.
@@ -119,6 +122,7 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 		Intent intent =
 			new Intent(RecordingMetadataActivity.this,
 						SpeakersActivity.class);
+		intent.putParcelableArrayListExtra("speakers", selectedSpeakers);
 		startActivityForResult(intent, ADD_SPEAKER);
 	}
 
@@ -201,6 +205,7 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 				ArrayList<Speaker> speakers = intent.getParcelableArrayListExtra("speakers");
 				for (Speaker speaker: speakers) {
 					if (!speakersIds.contains(speaker.getId())) {
+						selectedSpeakers.add(speaker);
 						speakersIds.add(speaker.getId());
 						for (Language language : speaker.getLanguages()) {
 							if (!languages.contains(language)) {
@@ -269,6 +274,14 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 		}
 	}
 
+	/**
+	 * Updates the displayed speakers to reflect who is present in the
+	 * selectedSpeakers list.
+	 */
+	private void updateDisplayedSpeakers() {
+
+	}
+
 	static final int ADD_SPEAKER = 0;
 	private UUID uuid;
 	private Recording recording;
@@ -288,4 +301,5 @@ public class RecordingMetadataActivity extends AikumaListActivity {
 	private String format;
 	private int bitsPerSample;
 	private int numChannels;
+	private ArrayList<Speaker> selectedSpeakers;
 }
