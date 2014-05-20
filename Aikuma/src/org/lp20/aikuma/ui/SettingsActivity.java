@@ -7,10 +7,14 @@ package org.lp20.aikuma.ui;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
@@ -54,6 +58,30 @@ public class SettingsActivity extends AikumaActivity {
 				PreferenceManager.getDefaultSharedPreferences(this);
 		readRespeakingMode();
 		setupSensitivitySlider();
+		setupTextChangedListener();
+	}
+
+	private void setupTextChangedListener() {
+		final EditText textField = (EditText) findViewById(R.id.rewindAmount);
+		textField.addTextChangedListener(new TextWatcher(){
+			@Override
+			public void afterTextChanged(Editable s) {
+				// TODO Auto-generated method stub
+				try {
+					Integer.parseInt(s.toString());
+					textField.setTextColor(Color.BLACK);
+				} catch (NumberFormatException e) {
+					textField.setTextColor(Color.RED);
+				}
+			}
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {}	
+		});
 	}
 
 	// Set the respeaking mode radio buttons as per the settings.
