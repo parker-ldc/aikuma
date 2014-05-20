@@ -7,8 +7,10 @@ package org.lp20.aikuma.ui;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.SeekBar;
@@ -65,7 +67,8 @@ public class PhoneRespeakActivity extends AikumaActivity {
 			//detected using Florian's method.
 			respeaker = new PhoneRespeaker(originalRecording, respeakingUUID,
 					new ThresholdSpeechAnalyzer(88,3,
-							new AverageRecognizer(7000,7000)));
+							new AverageRecognizer(7000,7000)),
+					getRewindAmount());
 		} catch (IOException e) {
 			PhoneRespeakActivity.this.finish();
 		} catch (MicException e) {
@@ -159,6 +162,21 @@ public class PhoneRespeakActivity extends AikumaActivity {
 	public void setSensitivity(int threshold) {
 		this.respeaker.setSensitivity(threshold);
 		sensitivitySlider.setProgress(threshold);
+	}
+
+	/**
+	 * Returns the amount of milliseconds that are rewound in the original
+	 * after each segment.
+	 *
+	 * @return	The rewind amount in milliseconds
+	 */
+	public int getRewindAmount() {
+		SharedPreferences preferences;
+		preferences = PreferenceManager.getDefaultSharedPreferences(this);
+		Integer rewindAmount = preferences.getInt("rewindAmount", 500);
+		Log.i("rewindAmount", "phone respeaker's gettin a rewind amount: " +
+				rewindAmount);
+		return 650;
 	}
 
 	private PhoneRespeakFragment fragment;

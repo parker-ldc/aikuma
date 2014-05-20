@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.UUID;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -42,12 +44,15 @@ public class PhoneRespeaker implements
 	 * @param	respeakingUUID	The UUID of this respeaking.
 	 * @param	analyzer	The analyzer that determines what audio constitutes
 	 * speech.
+	 * @param	rewindAmount	The amount to rewind the original after each
+	 * respeaking segment.
 	 * @throws	MicException	If there is an issue setting up the microphone.
 	 * @throws	IOException	If there is an I/O issue.
 	 */
 	public PhoneRespeaker(Recording original, UUID respeakingUUID,
-			Analyzer analyzer) throws MicException, IOException {
+			Analyzer analyzer, int rewindAmount) throws MicException, IOException {
 		this.analyzer = analyzer;
+		this.rewindAmount = rewindAmount;
 		setUpMicrophone(original.getSampleRate());
 		setUpFile(respeakingUUID);
 		setUpPlayer(original);
@@ -179,11 +184,6 @@ public class PhoneRespeaker implements
 		}
 	}
 
-	// The following two methods handle silences/speech discovered in the input
-	// data.
-	//public int getRewindAmount() {
-	//	return 650;
-	//}
 
 	public SimplePlayer getSimplePlayer() {
 		return this.player;
@@ -248,5 +248,7 @@ public class PhoneRespeaker implements
 	private boolean finishedPlaying = false;
 	/** The mapper used to store mapping data. */
 	private Mapper mapper;
+	/** The amount to rewind the original after each respeaking segment. */
+	private int rewindAmount;
 
 }
