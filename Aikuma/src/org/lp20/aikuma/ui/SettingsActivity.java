@@ -49,6 +49,7 @@ public class SettingsActivity extends AikumaActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.settings);
+		setupTextChangedListener();
 	}
 
 	@Override
@@ -57,8 +58,8 @@ public class SettingsActivity extends AikumaActivity {
 		preferences =
 				PreferenceManager.getDefaultSharedPreferences(this);
 		readRespeakingMode();
+		readRewindAmount();
 		setupSensitivitySlider();
-		setupTextChangedListener();
 	}
 
 	private void setupTextChangedListener() {
@@ -70,6 +71,10 @@ public class SettingsActivity extends AikumaActivity {
 				try {
 					Integer.parseInt(s.toString());
 					textField.setTextColor(Color.BLACK);
+					Editor prefsEditor = preferences.edit();
+					prefsEditor.putInt("rewindAmount",
+							Integer.parseInt(s.toString()));
+					prefsEditor.commit();
 				} catch (NumberFormatException e) {
 					textField.setTextColor(Color.RED);
 				}
@@ -95,6 +100,12 @@ public class SettingsActivity extends AikumaActivity {
 		} else if (respeakingMode.equals("phone")) {
 			radioGroup.check(R.id.radio_phone_respeaking);
 		}
+	}
+
+	private void readRewindAmount() {
+		Integer rewindAmount = preferences.getInt("rewindAmount", 500);
+		EditText textField = (EditText) findViewById(R.id.rewindAmount);
+		textField.setText(Integer.toString(rewindAmount));
 	}
 
 	@Override
