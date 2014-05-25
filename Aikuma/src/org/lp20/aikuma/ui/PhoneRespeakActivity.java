@@ -176,7 +176,7 @@ public class PhoneRespeakActivity extends AikumaActivity {
 		Integer rewindAmount = preferences.getInt("rewindAmount", 500);
 		Log.i("rewindAmount", "phone respeaker's gettin a rewind amount: " +
 				rewindAmount);
-		return 650;
+		return rewindAmount;
 	}
 
 	private PhoneRespeakFragment fragment;

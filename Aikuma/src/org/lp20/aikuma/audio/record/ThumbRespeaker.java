@@ -39,11 +39,14 @@ public class ThumbRespeaker {
 	 *
 	 * @param	original	The original recording to make a respeaking of.
 	 * @param	respeakingUUID	The UUID of the respeaking we will create.
+	 * @param	rewindAmount	The amount ot rewind the original after each
+	 * respeaking segment.
 	 * @throws	MicException	If the microphone couldn't be used.
 	 * @throws	IOException	If there is an I/O issue.
 	 */
-	public ThumbRespeaker(Recording original, UUID respeakingUUID)
-			throws MicException, IOException {
+	public ThumbRespeaker(Recording original, UUID respeakingUUID,
+			int rewindAmount) throws MicException, IOException {
+		this.rewindAmount = rewindAmount;
 		recorder = new Recorder(new File(Recording.getNoSyncRecordingsPath(),
 				respeakingUUID + ".wav"), original.getSampleRate());
 		player = new SimplePlayer(original, true);
@@ -154,4 +157,7 @@ public class ThumbRespeaker {
 
 	/** Indicates whether the recording has finished playing. */
 	private boolean finishedPlaying;
+
+	/** The amount to rewind the original after each respeaking segment. */
+	private int rewindAmount;
 }

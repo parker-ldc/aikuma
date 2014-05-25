@@ -7,7 +7,9 @@ package org.lp20.aikuma.ui;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -53,7 +55,8 @@ public class ThumbRespeakActivity extends AikumaActivity {
 		respeakingUUID = UUID.randomUUID();
 		try {
 			recording = Recording.read(sourceId);
-			respeaker = new ThumbRespeaker(recording, respeakingUUID);
+			respeaker = new ThumbRespeaker(recording, respeakingUUID,
+					getRewindAmount());
 		} catch (IOException e) {
 			ThumbRespeakActivity.this.finish();
 		} catch (MicException e) {
@@ -90,6 +93,21 @@ public class ThumbRespeakActivity extends AikumaActivity {
 			Toast.makeText(this, "There has been an error writing the mapping between original and respeaking to file",
 					Toast.LENGTH_LONG).show();
 		}
+	}
+
+	/**
+	 * Returns the amount of milliseconds that are rewound in the original
+	 * after each segment.
+	 *
+	 * @return	The rewind amount in milliseconds
+	 */
+	public int getRewindAmount() {
+		SharedPreferences preferences;
+		preferences = PreferenceManager.getDefaultSharedPreferences(this);
+		Integer rewindAmount = preferences.getInt("rewindAmount", 500);
+		Log.i("rewindAmount", "phone respeaker's gettin a rewind amount: " +
+				rewindAmount);
+		return rewindAmount;
 	}
 
 	private ThumbRespeakFragment fragment;
