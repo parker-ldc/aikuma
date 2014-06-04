@@ -11,7 +11,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.concurrent.TimeUnit;
+import java.util.Date;
 import org.lp20.aikuma.model.ServerCredentials;
 //import org.lp20.sync.FTPSyncUtil;
 import org.lp20.aikuma.R;
@@ -94,7 +96,8 @@ public class SyncUtil {
 							unsetSyncFlag("Logout failed");
 						} else {
 							Log.i("sync", "sync complete.");
-							unsetSyncFlag("Sync successful");
+							unsetSyncFlag("Sync successful.");
+							setLastSyncDate(new Date());
 						}
 						Log.i("sync", "end of conditional block");
 						waitMins = 1;
@@ -157,8 +160,23 @@ public class SyncUtil {
 		updateSyncTextView(status);
 	}
 
+	private static void setLastSyncDate(Date date) {
+		SyncUtil.lastSyncDate = date;
+		syncSettingsActivity.runOnUiThread(new Runnable() {
+			public void run() {
+				TextView lastSyncDateTextView = (TextView)
+									syncSettingsActivity.findViewById(
+											R.id.lastSyncDate);
+				lastSyncDateTextView.setText("Last sync at: " + 
+						new SimpleDateFormat().format(SyncUtil.lastSyncDate));
+			}
+		});
+	}
+
+
 	private static ServerCredentials serverCredentials;
 	private static Thread syncThread;
 	private static Activity syncSettingsActivity;
 	private static boolean syncing;
+	private static Date lastSyncDate;
 }

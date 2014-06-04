@@ -54,4 +54,11 @@
 		android:textSize="30sp"
 		android:gravity="center"
 	/>
+	<TextView
+		android:id="@+id/lastSyncDate"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:textSize="30sp"
+		android:gravity="center"
+	/>
 </LinearLayout>
