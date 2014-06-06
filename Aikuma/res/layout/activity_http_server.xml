@@ -75,7 +75,7 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/text_file_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

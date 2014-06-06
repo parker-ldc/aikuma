@@ -88,6 +88,10 @@ public class MenuBehaviour {
 				intent = new Intent(activity, HttpServerActivity.class);
 				activity.startActivity(intent);
 				return true;
+			case R.id.test_cloud_menu:
+				intent = new Intent(activity, CloudListFiles.class);
+				activity.startActivity(intent);
+				return true;
 			default:
 				return true;
 		}
