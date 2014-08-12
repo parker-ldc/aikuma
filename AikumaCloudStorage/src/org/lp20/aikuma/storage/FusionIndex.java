@@ -6,11 +6,8 @@ import org.json.simple.JSONValue;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -33,19 +30,22 @@ public class FusionIndex implements Index {
     private static final Logger log = Logger.getLogger(FusionIndex.class.getName());
     private String tableId;
 
-
     public static enum MetadataField {
         DATA_STORE_URI("data_store_uri", true, false),
         ITEM_ID("item_id", true, false),
         FILE_TYPE("file_type", true, false),
-        LANGUAGE("language", true, false),
+        LANGUAGES("languages", true, true),
         SPEAKERS("speakers", true, true),
         TAGS("tags", false, true),
         DISCOURSE_TYPES("discourse_types", false, true),
-        DATE_BACKED_UP("date_backedup", false, false, "yyyy-mm-dd'T'hh:mm:ssZ"),
-        DATE_APPROVED("date_approved", false, false, "yyyy-mm-dd'T'hh:mm:ssZ"),
+        DATE_BACKED_UP("date_backedup", false, false, "yyyy-mm-dd'T'hh:mm:ssZ", "DATETIME"),
+        DATE_APPROVED("date_approved", false, false, "yyyy-mm-dd'T'hh:mm:ssZ", "DATETIME"),
         METADATA("metadata", false, false),
-        USER_ID("user_id", true, false);
+        USER_ID("user_id", true, false),
+        PLAYS("plays", false, false, null, "NUMBER"),
+        LIKES("likes", false, false, null, "NUMBER"),
+        DISLIKES("dislikes", false, false, null, "NUMBER"),
+        LOCATION("location", false, false, null, "LOCATION");
 
         public String getName() {
             return name;
@@ -62,20 +62,25 @@ public class FusionIndex implements Index {
         public String getFormat() {
             return format;
         }
+        public String getType(){
+            return type;
+        }
 
         private String name;
         private boolean required;
         private boolean multivalue;
         private String format;
+        private String type;
 
-        private MetadataField(String name, boolean required, boolean multivalue, String format) {
+        private MetadataField(String name, boolean required, boolean multivalue, String format, String type) {
             this.name = name;
             this.required = required;
             this.multivalue = multivalue;
             this.format = format;
+            this.type = type;
         }
         private MetadataField(String name, boolean required, boolean multivalue) {
-            this(name, required, multivalue, null);
+            this(name, required, multivalue, null, "STRING");
         }
         private static Map<String, MetadataField> nameToValue;
         static  {
@@ -145,10 +150,10 @@ public class FusionIndex implements Index {
         }
     }
 
-
     private static final String INSERT_SQL_TEMPLATE = "INSERT INTO %s (identifier, %s) VALUES ('%s', %s)";
     private static final String UPDATE_SQL_TEMPLATE = "UPDATE %s SET %s WHERE ROWID = '%s';";
     private static final String SELECT_SQL_TEMPLATE;
+
     //TODO decide, should I just make this select *?
     static {
         boolean header = false;
@@ -158,16 +163,7 @@ public class FusionIndex implements Index {
             else header = true;
             fieldList += field.getName();
         }
-        SELECT_SQL_TEMPLATE = "SELECT " + fieldList + " FROM %s WHERE identifier = '%s';";
-    }
-
-    private static String urlencode(String data) {
-        try {
-            return URLEncoder.encode(data, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            log.log(Level.SEVERE, "Probable programming error: " + e.getMessage(), e);
-            return "";
-        }
+        SELECT_SQL_TEMPLATE = "SELECT ROWID, " + fieldList + " FROM %s WHERE identifier = '%s';";
     }
 
     private String accessToken; // Google OAUTH access token
@@ -187,13 +183,14 @@ public class FusionIndex implements Index {
 	public Map<String,String> getItemMetadata(String identifier) {
         Map json = getMetadata(identifier);
         if (json == null || !json.containsKey("rows")) return null;
-        Map<String, String> ret = new HashMap<String, String>(10);
+        Map<String, String> ret = new HashMap<String, String>(MetadataField.values().length);
         List<String> columns = (List<String>) json.get("columns");
         List<String> row = (List<String>) ((List) json.get("rows")).get(0);
 
         for (int i = 0; i < columns.size(); i++) {
             String key = columns.get(i);
             String value = row.get(i);
+            if (key == "rowid") continue; // This is a table-specific rowid; meaningless outside of the database
             if (MetadataField.byName(key).isMultivalue() && value.length() > 0) {
                 value = value.replace('|', ',').substring(1, value.length() - 1);
             }
@@ -221,7 +218,7 @@ public class FusionIndex implements Index {
 
     private Object doGet(String forIdentifier, String sql) {
         try {
-            URL url = new URL("https://www.googleapis.com/fusiontables/v1/query?sql=" + urlencode(sql));
+            URL url = new URL("https://www.googleapis.com/fusiontables/v1/query?sql=" + Utils.urlencode(sql));
             HttpURLConnection cn = gapi_connect(url, "GET", accessToken);
 
             if (cn.getResponseCode() == HttpURLConnection.HTTP_OK)
@@ -316,8 +313,55 @@ public class FusionIndex implements Index {
             log.severe("update called on item without an existing index entry");
             return false;
         }
-        doPost(identifier, makeUpdate(rowid, metadata));
-        return true;
+        return doPost(identifier, makeUpdate(rowid, metadata));
+    }
+
+    @Override
+    public boolean addLike(String identifier) {
+        return doIncrement(MetadataField.LIKES, identifier);
+    }
+
+    @Override
+    public boolean addDislike(String identifier) {
+
+        return doIncrement(MetadataField.DISLIKES, identifier);
+    }
+
+    @Override
+    public boolean addPlay(String identifier) {
+        return doIncrement(MetadataField.PLAYS, identifier);
+    }
+
+
+    private boolean doIncrement(MetadataField field, String identifier) {
+        Map<String, Object> data = getMetadata(identifier);
+        int tmp;
+        String rowid = "";
+        if (!data.containsKey("rows")) {
+            log.warning("Unable to get data for identifier '" + identifier + "'");
+            return false;
+        } else {
+            int i = 0;
+            JSONArray cols = (JSONArray) data.get("columns");
+            JSONArray rows = (JSONArray) ((JSONArray) data.get("rows")).get(0);
+            String name = field.getName();
+            for (Object o : cols) {
+                if ("rowid".equals(o)) {
+                    rowid =  (String) rows.get(i);
+                }
+                if (name.equals(o)) break;
+                i++;
+            }
+            String value = (String) rows.get(i);
+            tmp = Integer.parseInt(value) + 1;
+
+        }
+        Map<String, String> newData = new HashMap<String, String>(1);
+        newData.put(field.getName(), Integer.toString(tmp));
+        return doPost(identifier, makeUpdate(rowid, newData));
+
+
+
     }
 
     private boolean doPost(String identifier, String body) {
@@ -351,6 +395,17 @@ public class FusionIndex implements Index {
         StringBuilder valueList = new StringBuilder();
 
         boolean header = false;
+
+        //TODO: This is terrible; find a better way to default these values
+        String tmp = MetadataField.PLAYS.getName();
+        if (!metadata.containsKey(tmp)) metadata.put(tmp, "0");
+        tmp = MetadataField.LIKES.getName();
+        if (!metadata.containsKey(tmp)) metadata.put(tmp, "0");
+        tmp = MetadataField.DISLIKES.getName();
+        if (!metadata.containsKey(tmp)) metadata.put(tmp, "0");
+        //
+        //
+
         for (Map.Entry<String, String> e : metadata.entrySet()) {
             if (header) {
                 fieldList.append(", ");
@@ -364,7 +419,7 @@ public class FusionIndex implements Index {
             }
             valueList.append("'"+ value + "'");
         }
-        return urlencode(String.format(INSERT_SQL_TEMPLATE, tableId, fieldList.toString(), identifier,
+        return Utils.urlencode(String.format(INSERT_SQL_TEMPLATE, tableId, fieldList.toString(), identifier,
                 valueList.toString()));
     }
     private String makeUpdate(String rowid, Map<String, String> metadata) {
@@ -381,7 +436,7 @@ public class FusionIndex implements Index {
             }
             sql.append(field).append(" = '").append(value).append("'");
         }
-        return urlencode(String.format(UPDATE_SQL_TEMPLATE, tableId, sql.toString(), rowid));
+        return Utils.urlencode(String.format(UPDATE_SQL_TEMPLATE, tableId, sql.toString(), rowid));
     }
     private void validateMetadata(Map<String, String> metadata, boolean isInsert) {
         if (!MetadataField.areValidNames(metadata.keySet())) {
@@ -391,8 +446,8 @@ public class FusionIndex implements Index {
             String name = f.getName();
             if (isInsert && f.isRequired( )&& !metadata.containsKey(name))
                 throw new IllegalArgumentException("Missing required field " + name);
-            if (f.getFormat() != null) {
-                // TODO: this assumes all formats are date formats; it should probably be different
+            if (!metadata.containsKey(name)) continue;
+            if (f.getType() == "DATETIME" && f.getFormat() != null) {
                 try {
                     SimpleDateFormat sdf = new SimpleDateFormat(f.getFormat());
                     Date tmp = sdf.parse(metadata.get(name));
@@ -400,6 +455,17 @@ public class FusionIndex implements Index {
                     throw new IllegalArgumentException("Invalid data format for " + name +
                                                        "; does not match" + f.getFormat());
                 }
+            }
+            if (f.getType() == "NUMBER") {
+                // TODO: this will be a problem if we have any non-integer fields
+                String tmp = metadata.get(name);
+                try {
+                    Integer.parseInt(tmp);
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("Value " + tmp + " for " + name + " is invalid. " +
+                            "A number is required");
+                }
+
             }
             if ("discourse_type".equals(name)) {
                 for (String tmp : metadata.get(name).split(",")) {

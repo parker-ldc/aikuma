@@ -45,4 +45,25 @@ public interface Index {
      */
     public abstract boolean update(String identifier, Map<String,String> metadata);
 
+    /**
+     * Increment the "like" count for an item
+      * @param identifier the Aikuma identifier for the item
+     * @return true if index update was successful, false otherwise
+     */
+    public abstract boolean addLike(String identifier);
+
+    /**
+     * Increment the "dislike" count for an item
+     * @param identifier the Aikuma identifier for the item
+     * @return true if index update was successful, false otherwise
+     */
+    public abstract boolean addDislike(String identifier);
+
+    /**
+     * Increment the play count for an item
+     * @param identifier the Aikuma identifier for the item
+     * @return true if index update was successful, false otherwise
+     */
+    public abstract boolean addPlay(String identifier);
+
 }

@@ -11,6 +11,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * A collection of utility methods.
@@ -67,8 +68,16 @@ public class Utils {
 		}
 		return sb.toString();		
 	}
-	
-	/**
+
+    static String urlencode(String data) {
+        try {
+            return URLEncoder.encode(data, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            return "";
+        }
+    }
+
+    /**
 	 * Helps build a URL.
 	 * 
 	 * @author haejoong

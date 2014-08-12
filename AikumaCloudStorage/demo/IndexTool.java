@@ -124,6 +124,12 @@ public class IndexTool {
                 index.dropTable(tableIdToDrop);
             } else if ("list".equals(action)) {
                 index.listTables();
+            } else if ("generate_schema".equals(action)) {
+                index.generateSchema();
+            } else if ("increment".equals(action)) {
+                identifier = args[1];
+                String field = args[2];
+                index.increment(identifier, field);
             }
 
         } catch (InvalidAccessTokenException e) {
@@ -292,6 +298,38 @@ public class IndexTool {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+    @SuppressWarnings("unchecked")
+    private void generateSchema() {
+        JSONObject schema = new JSONObject();
+        schema.put("name", "aikuma_metadata");
+        schema.put("isExportable", false);
+        schema.put("description", "Main metadata table for Aikuma cloud storage");
+        JSONArray columns = new JSONArray();
+        JSONObject id = new JSONObject();
+        id.put("name", "identifier");
+        id.put("type", "STRING");
+        columns.add(id);
+        for (FusionIndex.MetadataField f : FusionIndex.MetadataField.values()) {
+            JSONObject tmp = new JSONObject();
+            tmp.put("name", f.getName());
+            tmp.put("type", f.getType());
+            columns.add(tmp);
+        }
+        schema.put("columns", columns);
+        System.out.println(schema.toJSONString());
+
+    }
+
+    private void increment(String identifier, String field) {
+        FusionIndex fi = getFusionIndex();
+        if ("plays".equals(field)) {
+            fi.addPlay(identifier);
+        } else if ("likes".equals(field)) {
+            fi.addLike(identifier);
+        } else if ("dislikes".equals(field)) {
+            fi.addDislike(identifier);
         }
     }
 
