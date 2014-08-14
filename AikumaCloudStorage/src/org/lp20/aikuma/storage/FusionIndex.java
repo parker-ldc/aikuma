@@ -403,8 +403,6 @@ public class FusionIndex implements Index {
         if (!metadata.containsKey(tmp)) metadata.put(tmp, "0");
         tmp = MetadataField.DISLIKES.getName();
         if (!metadata.containsKey(tmp)) metadata.put(tmp, "0");
-        //
-        //
 
         for (Map.Entry<String, String> e : metadata.entrySet()) {
             if (header) {
